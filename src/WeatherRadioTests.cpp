@@ -25,10 +25,7 @@
 #define STATUS_PIN 8
 
 Logging logging;
-
 PrintEx serial = Serial;
-
-
 
 class Runtime {
 public:
@@ -50,15 +47,16 @@ public:
     // Received Signal Quality Interrupt.
     // 0 = Received Signal Quality measurement has not been triggered.
     // 1 = Received Signal Quality measurement has been triggered.
-    Radio.getRsqStatus(INTACK);
-    logging.printRssiTo(Serial);
-    logging.printSnrTo(Serial);
-    logging.printFrequencyOffsetTo(Serial);
+    Radio.getSignalStatus(INTACK);
+    // Serial.println(Radio.signalStatus, BIN);
+    // Serial.println(Radio.rssi, BIN);
+    // Serial.println(Radio.snr, BIN);
+    // Serial.println(Radio.freqoff, BIN);
   }
 
   void onSame() {
     Radio.getSameStatus(INTACK);
-    struct SameStatus sameStatus = Radio.same;
+    struct SameStatus sameStatus = Radio.sameStatus;
     if (sameStatus.eomdet)
     {
       Radio.sameFlush();
@@ -80,34 +78,37 @@ public:
       Radio.sameFlush();
   }
 
-  void onSignalQuality() {
-    // Bit 1 ASQINT
-    // Signal Quality Interrupt.
-    // 0 = Signal quality measurement has not been triggered.
-    // 1 = Signal quality measurement has been triggered.
-    Radio.getAsqStatus(INTACK);
+  void onAlerts() {
+    Radio.getAlertStatus(INTACK);
 
-    if (Radio.sameWat == Radio.asqStatus)
-      return;
+    serial.print(F("1050Hz Alert Tone:\n"));
+    serial.printf("%p %d\n", F("\tTone Present: "), Radio.alertStatus.tonePresent);
+    serial.printf("%p %d\n", F("\tAlert Off Interrupt: "), Radio.alertStatus.alertoff_int);
+    serial.printf("%p %d\n", F("\tAlert On Interrupt: "), Radio.alertStatus.alerton_int);
+  }
 
-    if (Radio.asqStatus == 0x01)
-    {
-      Radio.sameFlush();
-      serial.printf("%p\n", WAT_ON_LABEL);
-      //  More application specific code could go here.  (Unmute audio, turn something on/off, etc.)
+  void checkInterrupts() {
+    if (Radio.interruptStatus.tuneComplete) {
+      onTuneComplete();
     }
 
-    if (Radio.asqStatus == 0x02)
-    {
-      serial.printf("%p\n", WAT_OFF_LABEL);
-      //  More application specific code could go here.  (Mute audio, turn something on/off, etc.)
+    if (Radio.interruptStatus.rsq) {
+      onReceivedSignalQuality();
     }
 
-    Radio.sameWat = Radio.asqStatus;
+    if (Radio.interruptStatus.same) {
+      onSame();
+    }
+
+    if (Radio.interruptStatus.asq) {
+      onAlerts();
+    }
   }
 };
 
 class Control {
+  Runtime runtime;
+
   public:
   //
   //  The End.
@@ -252,20 +253,20 @@ class Control {
         break;
 
       case 'r':
-        Radio.getRsqStatus(INTACK);
-        Serial.println(Radio.rsqStatus, BIN);
-        Serial.println(Radio.rssi, BIN);
-        Serial.println(Radio.snr, BIN);
-        Serial.println(Radio.freqoff, BIN);
+        Radio.interruptStatus.rsq = 1;
         break;
 
       case 'a':
-        Radio.getAsqStatus(INTACK);
-        Serial.println(Radio.asqStatus, HEX);
+        Radio.interruptStatus.asq = 1;
         break;
+
       case 'i':
         Radio.getIntStatus();
-        dump((uint8_t*)&Radio.interrupts, sizeof(struct InterruptStatus));
+        dump((uint8_t*)&Radio.interruptStatus, sizeof(struct InterruptStatus));
+        break;
+
+      case 'c':
+        runtime.checkInterrupts();
         break;
 
       case 'p':
@@ -318,7 +319,6 @@ class Control {
 };
 
 Control control;
-Runtime runtime;
 
 void setup()
 {
