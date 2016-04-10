@@ -1,3 +1,7 @@
 [submodule "lib/PrintEx"]
 	path = lib/PrintEx
 	url = https://github.com/Chris--A/PrintEx.git
+[submodule "lib/SI4707"]
+	path = lib/SI4707
+	url = git@github.com:infomaniac50/Si4707.git
+	branch = develop
