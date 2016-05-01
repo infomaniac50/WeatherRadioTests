@@ -20,91 +20,13 @@
 #include <SI4707.h>
 #include "Logging.h"
 #include "Message.h"
+#include "Runtime.h"
 
 #define ERROR_PIN 7
 #define STATUS_PIN 8
 
 Logging logging;
 PrintEx serial = Serial;
-
-class Runtime {
-public:
-  void onTuneComplete() {
-    // 0 STCINT
-    // Seek/Tune Complete Interrupt.
-    // 0 = Tune complete has not been triggered.
-    // 1 = Tune complete has been triggered.
-    Radio.getTuneStatus(INTACK);  //  Using INTACK clears STCINT, CHECK preserves it.
-    logging.printFrequencyTo(Serial);
-    logging.printRssiTo(Serial);
-    logging.printSnrTo(Serial);
-    Radio.sameFlush();             //  This should be done after any tune function.
-    //intStatusCopy |= RSQINT;         //  We can force it to get rsqStatus on any tune.
-  }
-
-  void onReceivedSignalQuality() {
-    // STATUS Response Bit 3 RSQINT
-    // Received Signal Quality Interrupt.
-    // 0 = Received Signal Quality measurement has not been triggered.
-    // 1 = Received Signal Quality measurement has been triggered.
-    Radio.getSignalStatus(INTACK);
-    // Serial.println(Radio.signalStatus, BIN);
-    // Serial.println(Radio.rssi, BIN);
-    // Serial.println(Radio.snr, BIN);
-    // Serial.println(Radio.freqoff, BIN);
-  }
-
-  void onSame() {
-    Radio.getSameStatus(INTACK);
-    struct SameStatus sameStatus = Radio.sameStatus;
-    if (sameStatus.eomdet)
-    {
-      Radio.sameFlush();
-      logging.printEomTo(Serial);
-      //  More application specific code could go here. (Mute audio, turn something on/off, etc.)
-      return;
-    }
-
-    if (Radio.msgStatus & MSGAVL && (!(Radio.msgStatus & MSGUSD)))  // If a message is available and not already used,
-      Radio.sameParse();                                // parse it.
-
-    if (Radio.msgStatus & MSGPAR)
-    {
-      Radio.msgStatus &= ~MSGPAR;                         // Clear the parse status, so that we don't logging.print it again.
-      logging.printSameMessageTo(Serial);
-    }
-
-    if (Radio.msgStatus & MSGPUR)  //  Signals that the third header has been received.
-      Radio.sameFlush();
-  }
-
-  void onAlerts() {
-    Radio.getAlertStatus(INTACK);
-
-    serial.print(F("1050Hz Alert Tone:\n"));
-    serial.printf("%p %d\n", F("\tTone Present: "), Radio.alertStatus.tonePresent);
-    serial.printf("%p %d\n", F("\tAlert Off Interrupt: "), Radio.alertStatus.alertoff_int);
-    serial.printf("%p %d\n", F("\tAlert On Interrupt: "), Radio.alertStatus.alerton_int);
-  }
-
-  void checkInterrupts() {
-    if (Radio.interruptStatus.tuneComplete) {
-      onTuneComplete();
-    }
-
-    if (Radio.interruptStatus.rsq) {
-      onReceivedSignalQuality();
-    }
-
-    if (Radio.interruptStatus.same) {
-      onSame();
-    }
-
-    if (Radio.interruptStatus.asq) {
-      onAlerts();
-    }
-  }
-};
 
 class Control {
   Runtime runtime;
