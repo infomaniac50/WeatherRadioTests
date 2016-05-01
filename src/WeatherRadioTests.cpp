@@ -185,7 +185,13 @@ class Control {
       case 'I':
         Radio.getIntStatus();
       case 'i':
-        dump((uint8_t*)&Radio.interruptStatus, sizeof(struct InterruptStatus));
+        serial.printf("available: %d\n", Radio.available);
+        serial.printf("asq: %d\n", Radio.interruptStatus.asq);
+        serial.printf("clearToSend: %d\n", Radio.interruptStatus.clearToSend);
+        serial.printf("error: %d\n", Radio.interruptStatus.error);
+        serial.printf("rsq: %d\n", Radio.interruptStatus.rsq);
+        serial.printf("same: %d\n", Radio.interruptStatus.same);
+        serial.printf("tuneComplete: %d\n", Radio.interruptStatus.tuneComplete);
         break;
 
       case 'c':
