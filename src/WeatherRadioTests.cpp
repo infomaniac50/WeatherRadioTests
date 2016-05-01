@@ -188,7 +188,7 @@ class Control {
         break;
 
       case 'c':
-        runtime.checkInterrupts();
+        runtime.processInterrupts();
         break;
 
       case 'p':
