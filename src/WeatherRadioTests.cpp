@@ -28,6 +28,11 @@
 Logging logging;
 PrintEx serial = Serial;
 
+struct prop_t {
+    uint16_t address;
+    uint16_t value;
+};
+
 class Control {
   Runtime runtime;
 
@@ -131,6 +136,25 @@ class Control {
     return true;
   }
 
+  unsigned long int prompt() {
+      char cmdBuffer[10];
+      unsigned long int loopValue;
+
+      for (int i = 0; i < 10; i++) {
+        cmdBuffer[i] = '\0';
+      }
+
+      // 0x04x
+      Serial.print("> ");
+      Serial.setTimeout(30000);
+      Serial.readBytesUntil(';', cmdBuffer, 10);
+      Serial.println(cmdBuffer);
+
+      loopValue = strtoul(cmdBuffer, 0, 16);
+
+      return loopValue;
+  }
+
   //
   //  Functions are performed here.
   //
@@ -198,33 +222,32 @@ class Control {
         runtime.processInterrupts();
         break;
 
+      case 'P':
       case 'p':
-        Serial.print("pAddr > ");
-        char cmdBuffer[10];
-        for (int i = 0; i < 10; i++) {
-          cmdBuffer[i] = '\0';
+        prop_t property;
+
+        property.address = prompt();
+
+        Serial.print("Address: 0x");
+        Serial.print(property.address, HEX);
+        Serial.write(" 0b");
+        Serial.print(property.address, BIN);
+        Serial.write(' ');
+        Serial.println(property.address);
+
+        if (function == 'p') {
+            property.value = Radio.getProperty(property.address);
+        } else {
+            property.value = prompt();
+            Radio.setProperty(property.address, property.value);
         }
-        // 0x04x
-        Serial.setTimeout(30000);
-        int bytesRead;
 
-        bytesRead = Serial.readBytesUntil('+', cmdBuffer, 10);
-        Serial.println(cmdBuffer);
-
-        unsigned long int pAddr;
-        pAddr = strtoul(cmdBuffer, 0, 16);
-
-        Serial.println(bytesRead);
-        Serial.println(pAddr);
-
-        uint16_t pValue;
-        pValue = Radio.getProperty(pAddr);
-
-        Serial.print(pValue, HEX);
+        Serial.print("Value: 0x");
+        Serial.print(property.value, HEX);
+        Serial.write(" 0b");
+        Serial.print(property.value, BIN);
         Serial.write(' ');
-        Serial.print(pValue, BIN);
-        Serial.write(' ');
-        Serial.println(pValue);
+        Serial.println(property.value);
         break;
 
       default:
