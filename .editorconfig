@@ -1,0 +1,2 @@
+[*.{cpp,h,ino,c}]
+  indent_size = 4
