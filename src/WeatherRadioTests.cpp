@@ -182,8 +182,9 @@ class Control {
         Radio.interruptStatus.asq = 1;
         break;
 
-      case 'i':
+      case 'I':
         Radio.getIntStatus();
+      case 'i':
         dump((uint8_t*)&Radio.interruptStatus, sizeof(struct InterruptStatus));
         break;
 
