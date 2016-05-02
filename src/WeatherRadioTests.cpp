@@ -194,11 +194,15 @@ class Control {
         break;
 
       case 'r':
-        Radio.interruptStatus.rsq = 1;
+        Radio.getSignalStatus(INTACK);
         break;
 
       case 'a':
-        Radio.interruptStatus.asq = 1;
+        Radio.getAlertStatus(INTACK);
+        serial.print(F("1050Hz Alert Tone:\n"));
+        serial.printf("%p %d\n", F("\tTone Present: "), Radio.alertStatus.tonePresent);
+        serial.printf("%p %d\n", F("\tAlert Off Interrupt: "), Radio.alertStatus.alertoff_int);
+        serial.printf("%p %d\n", F("\tAlert On Interrupt: "), Radio.alertStatus.alerton_int);
         break;
 
       case 'I':
