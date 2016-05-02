@@ -109,11 +109,6 @@ class Control {
       //
       Radio.setProperty(WB_ASQ_INT_SOURCE, (ALERTOFIEN | ALERTONIEN));
 
-      //
-      //  Tune to the desired frequency.
-      //
-      Radio.scan();  //  6 digits only.
-
       serial.printf("%p\n", RADIO_ON_LABEL);
     }
   }
