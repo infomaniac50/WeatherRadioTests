@@ -11,6 +11,12 @@ void Runtime::onTuneComplete() {
     // 1 = Tune complete has been triggered.
     Radio.getTuneStatus(INTACK);  //  Using INTACK clears STCINT, CHECK preserves it.
     Radio.sameFlush();             //  This should be done after any tune function.
+    Serial.print(F("Channel: "));
+    Serial.println(Radio.tuneStatus.channel);
+    Serial.print(F("RSSI: "));
+    Serial.println(Radio.tuneStatus.rssi);
+    Serial.print(F("SNR: "));
+    Serial.println(Radio.tuneStatus.snr);
     //intStatusCopy |= RSQINT;         //  We can force it to get rsqStatus on any tune.
 }
 
