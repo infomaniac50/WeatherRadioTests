@@ -107,7 +107,7 @@ class Control {
       //
       //  ASQ Interrupt Sources.
       //
-      Radio.setProperty(WB_ASQ_INT_SOURCE, (ALERTOFIEN | ALERTONIEN));
+    //   Radio.setProperty(WB_ASQ_INT_SOURCE, (ALERTOFIEN | ALERTONIEN));
 
       serial.printf("%p\n", RADIO_ON_LABEL);
     }
