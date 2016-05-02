@@ -114,20 +114,20 @@ class Control {
   }
 
   bool tuneUp() {
-    if (Radio.tuneStatus.channel >= WB_MAX_FREQUENCY)
-      return false;
-
-    Radio.tuneStatus.channel += WB_CHANNEL_SPACING;
-    Radio.tune();
+    // if (Radio.tuneStatus.channel >= WB_MAX_FREQUENCY)
+    //   return false;
+    //
+    // Radio.tuneStatus.channel += WB_CHANNEL_SPACING;
+    // Radio.tune();
     return true;
   }
 
   bool tuneDown() {
-    if (Radio.tuneStatus.channel <= WB_MIN_FREQUENCY)
-      return false;
-
-    Radio.tuneStatus.channel -= WB_CHANNEL_SPACING;
-    Radio.tune();
+    // if (Radio.tuneStatus.channel <= WB_MIN_FREQUENCY)
+    //   return false;
+    //
+    // Radio.tuneStatus.channel -= WB_CHANNEL_SPACING;
+    // Radio.tune();
     return true;
   }
 
