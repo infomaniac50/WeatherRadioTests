@@ -64,19 +64,22 @@ void Runtime::onAlerts() {
 }
 
 void Runtime::processInterrupts() {
-    if (Radio.interruptStatus.tuneComplete) {
+    InterruptStatus localCopy;
+    localCopy = Radio.interruptStatus;
+
+    if (localCopy.tuneComplete) {
         onTuneComplete();
     }
 
-    if (Radio.interruptStatus.rsq) {
+    if (localCopy.rsq) {
         onReceivedSignalQuality();
     }
 
-    if (Radio.interruptStatus.same) {
+    if (localCopy.same) {
         onSame();
     }
 
-    if (Radio.interruptStatus.asq) {
+    if (localCopy.asq) {
         onAlerts();
     }
 }
