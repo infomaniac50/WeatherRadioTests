@@ -109,17 +109,17 @@ void Logging::printSameMessageTo(StreamEx printer)
 
 void Logging::printRssiTo(StreamEx printer)
 {
-  printer.printf("%p%d\n", RSSI_LABEL, Radio.rssi);
+  printer.printf("%p%d\n", RSSI_LABEL, Radio.tuneStatus.rssi);
 }
 
 void Logging::printSnrTo(StreamEx printer)
 {
-  printer.printf("%p%d\n", SNR_LABEL, Radio.snr);
+  printer.printf("%p%d\n", SNR_LABEL, Radio.tuneStatus.snr);
 }
 
 void Logging::printFrequencyOffsetTo(StreamEx printer)
 {
-  printer.printf("%p%d\n", FREQOFF_LABEL, Radio.freqoff);
+  printer.printf("%p%d\n", FREQOFF_LABEL, Radio.tuneStatus.offset);
 }
 
 void Logging::printVolumeTo(StreamEx printer)

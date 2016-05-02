@@ -119,19 +119,19 @@ class Control {
   }
 
   bool tuneUp() {
-    if (Radio.channel >= WB_MAX_FREQUENCY)
+    if (Radio.tuneStatus.channel >= WB_MAX_FREQUENCY)
       return false;
 
-    Radio.channel += WB_CHANNEL_SPACING;
+    Radio.tuneStatus.channel += WB_CHANNEL_SPACING;
     Radio.tune();
     return true;
   }
 
   bool tuneDown() {
-    if (Radio.channel <= WB_MIN_FREQUENCY)
+    if (Radio.tuneStatus.channel <= WB_MIN_FREQUENCY)
       return false;
 
-    Radio.channel -= WB_CHANNEL_SPACING;
+    Radio.tuneStatus.channel -= WB_CHANNEL_SPACING;
     Radio.tune();
     return true;
   }
