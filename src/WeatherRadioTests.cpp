@@ -21,6 +21,7 @@
 #include "Logging.h"
 #include "Message.h"
 #include "Runtime.h"
+#include "Test.h"
 
 #define ERROR_PIN 7
 #define STATUS_PIN 8
@@ -249,6 +250,10 @@ class Control {
         Serial.print(property.value, BIN);
         Serial.write(' ');
         Serial.println(property.value);
+        break;
+
+      case 't':
+        testByteOrder();
         break;
 
       default:
