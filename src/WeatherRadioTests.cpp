@@ -209,13 +209,15 @@ class Control {
       case 'I':
         Radio.getIntStatus();
       case 'i':
-        serial.printf("available: %d\n", Radio.available);
-        serial.printf("asq: %d\n", Radio.interruptStatus.asq);
-        serial.printf("clearToSend: %d\n", Radio.interruptStatus.clearToSend);
-        serial.printf("error: %d\n", Radio.interruptStatus.error);
-        serial.printf("rsq: %d\n", Radio.interruptStatus.rsq);
-        serial.printf("same: %d\n", Radio.interruptStatus.same);
-        serial.printf("tuneComplete: %d\n", Radio.interruptStatus.tuneComplete);
+        serial.printf("available: %d\n", Radio.available); // Global interrupt status
+        serial.printf("clearToSend: %d\n", Radio.interruptStatus.clearToSend); // D7
+        serial.printf("error: %d\n", Radio.interruptStatus.error); // D6
+        // Reserved D5
+        // Reserved D4
+        serial.printf("rsq: %d\n", Radio.interruptStatus.rsq); // D3
+        serial.printf("same: %d\n", Radio.interruptStatus.same); // D2
+        serial.printf("asq: %d\n", Radio.interruptStatus.asq); // D1
+        serial.printf("tuneComplete: %d\n", Radio.interruptStatus.tuneComplete); // D0
         break;
 
       case 'c':
