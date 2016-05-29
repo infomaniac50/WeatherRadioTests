@@ -250,6 +250,9 @@ class Control {
         Serial.println(property.value);
         break;
 
+      case 'T':
+          Radio.getTuneStatus(1);  //  Using INTACK clears STCINT, CHECK preserves it.
+        break;
       case 't':
         testByteOrder();
         break;
