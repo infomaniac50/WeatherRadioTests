@@ -18,21 +18,19 @@
 
 #include <Wire.h>
 #include <SI4707.h>
+#include <SerialCommand.h>
+
 #include "Logging.h"
 #include "Message.h"
 #include "Runtime.h"
 #include "Test.h"
+#include "commands/PropertyCommand.h"
 
 #define ERROR_PIN 7
 #define STATUS_PIN 8
 
 Logging logging;
 PrintEx serial = Serial;
-
-struct prop_t {
-    uint16_t address;
-    uint16_t value;
-};
 
 class Control {
   Runtime runtime;
@@ -278,6 +276,18 @@ class Control {
 
 Control control;
 
+bool commandMode;
+SerialCommand serialCommand;
+PropertyCommand propertyCommand(&serialCommand);
+
+void getPropertyCommand(void) {
+    propertyCommand.getProperty();
+}
+
+void setPropertyCommand(void) {
+    propertyCommand.setProperty();
+}
+
 void setup()
 {
   // On recent versions of Arduino the LED pin likes to turn on for no apparent reason
@@ -292,6 +302,8 @@ void setup()
 
   Serial.begin(9600);
 
+  serialCommand.addCommand("prop_get", getPropertyCommand);
+  serialCommand.addCommand("prop_set", setPropertyCommand);
   delay(100);
 
   // Setup Radio
@@ -301,7 +313,17 @@ void setup()
 void loop()
 {
   if (Serial.available()) {
-    control.blink(STATUS_PIN, 25);
-    control.getFunction();
+    if ('#' == Serial.peek()) {
+        Serial.read();
+        commandMode = !commandMode;
+    } else {
+        if (commandMode) {
+            serialCommand.readSerial();
+        }
+        else {
+            control.blink(STATUS_PIN, 25);
+            control.getFunction();
+        }
+    }
   }
 }
